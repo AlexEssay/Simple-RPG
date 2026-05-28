@@ -95,7 +95,7 @@
     <div id="tips">
       Move: WASD / Arrow Keys<br />
       Attack: Left Click / Space<br />
-      Dodge (0.5s i-frames): Shift / Right Click<br />
+      Dodge (0.5s invincibility): Shift / Right Click<br />
       Weapon Swap: 1 = Sword, 2 = Bow<br />
       Portals on map edges move between areas.
     </div>
@@ -499,9 +499,10 @@
     const getUpgrade = (id) => game.upgrades[id].multiplier();
     const getPassiveGain = () => 1 * getUpgrade("passivePower") * game.rebirthMultiplier * game.bossBlessing;
 
-    function gainPower(amount, isKill = false) {
+    function gainPower(amount, isKill = false, isPassive = false) {
       let gain = amount * game.rebirthMultiplier * game.bossBlessing;
       if (isKill) gain *= getUpgrade("killPower");
+      if (isPassive) gain *= getUpgrade("passivePower");
       gain = Math.floor(gain);
       game.power += gain;
       game.runPowerEarned += gain;
@@ -584,7 +585,7 @@
       game.passiveTick += dt;
       while (game.passiveTick >= 1) {
         game.passiveTick -= 1;
-        gainPower(getUpgrade("passivePower"), false);
+        gainPower(1, false, true);
       }
 
       game.spawnTick += dt;
