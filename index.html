@@ -89,7 +89,7 @@
     <div class="row"><span>Area Unlock Power</span><strong id="areaUnlock">0</strong></div>
     <div class="row"><span>Weapon</span><strong id="weaponName">Sword</strong></div>
     <button id="bossBtn">Challenge Area Boss</button>
-    <button id="rebirthBtn">Rebirth (Requires 10000 Power)</button>
+    <button id="rebirthBtn">Rebirth</button>
     <h3>Upgrades</h3>
     <div id="upgrades"></div>
     <div id="tips">
@@ -584,7 +584,7 @@
       game.passiveTick += dt;
       while (game.passiveTick >= 1) {
         game.passiveTick -= 1;
-        gainPower(1 * getUpgrade("passivePower"), false);
+        gainPower(getUpgrade("passivePower"), false);
       }
 
       game.spawnTick += dt;
@@ -691,8 +691,11 @@
       ui.rebirthMult.textContent = `${game.rebirthMultiplier.toFixed(2)}x`;
       ui.bossBlessing.textContent = `${game.bossBlessing.toFixed(2)}x`;
       ui.areaName.textContent = area.name;
-      ui.areaUnlock.textContent = `${Math.floor(game.runPowerEarned)} / ${area.unlockPower}`;
+      ui.areaUnlock.textContent = area.unlockPower === 0
+        ? "Unlocked"
+        : `${Math.floor(game.runPowerEarned)} / ${area.unlockPower}`;
       ui.weaponName.textContent = game.player.weapon === "sword" ? "Sword" : "Bow";
+      ui.rebirthBtn.textContent = `Rebirth (Requires ${game.rebirthThreshold} Power)`;
       ui.rebirthBtn.disabled = game.power < game.rebirthThreshold;
       ui.bossBtn.disabled = game.bossSpawned || game.bossDefeatedInRun[game.currentArea];
       renderUpgradeButtons();
@@ -751,6 +754,7 @@
 
     document.addEventListener("keydown", (e) => {
       const k = e.key.toLowerCase();
+      if (k === " " || k.startsWith("arrow")) e.preventDefault();
       keys[k] = true;
       if (k === " ") attack();
       if (k === "1") game.player.weapon = "sword";
